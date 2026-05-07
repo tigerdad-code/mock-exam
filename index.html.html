@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MN Esthetician State Board – Mock Exam</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0A1628;
+  --blue: #1B3A6B;
+  --mid: #2C5282;
+  --accent: #3182CE;
+  --gold: #D4A017;
+  --green: #276749;
+  --green-bg: #F0FFF4;
+  --red: #9B1C1C;
+  --red-bg: #FFF5F5;
+  --gray1: #F7F8FA;
+  --gray2: #E8ECF1;
+  --gray3: #CBD5E0;
+  --gray4: #718096;
+  --gray5: #4A5568;
+  --white: #FFFFFF;
+  --text: #1A202C;
+  --flag: #C05621;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--gray1);color:var(--text);min-height:100vh;font-size:15px}
+
+/* ── WELCOME SCREEN ── */
+#welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+.psi-header{background:var(--navy);width:100%;max-width:860px;padding:18px 28px;border-radius:10px 10px 0 0;display:flex;align-items:center;gap:14px}
+.psi-logo{width:38px;height:38px;background:var(--white);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--navy)}
+.psi-title{color:var(--white)}
+.psi-title h1{font-size:16px;font-weight:600;letter-spacing:.3px}
+.psi-title p{font-size:12px;color:rgba(255,255,255,.6);margin-top:2px}
+.welcome-body{background:var(--white);width:100%;max-width:860px;padding:36px 40px;border:1px solid var(--gray2);border-top:none;border-radius:0 0 10px 10px;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.welcome-body h2{font-size:22px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.welcome-body>p{font-size:14px;color:var(--gray4);margin-bottom:28px}
+.exam-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
+@media(max-width:640px){.exam-grid{grid-template-columns:1fr}}
+.exam-opt{border:2px solid var(--gray2);border-radius:10px;padding:20px 18px;cursor:pointer;transition:all .18s;position:relative;background:var(--white)}
+.exam-opt:hover{border-color:var(--accent);background:#EBF4FF;transform:translateY(-1px);box-shadow:0 4px 12px rgba(49,130,206,.12)}
+.exam-opt.selected{border-color:var(--accent);background:#EBF4FF}
+.exam-num{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.exam-name{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:10px}
+.exam-meta{display:flex;flex-direction:column;gap:4px}
+.exam-meta span{font-size:12px;color:var(--gray4)}
+.exam-meta strong{color:var(--gray5)}
+.info-strip{background:var(--gray1);border:1px solid var(--gray2);border-radius:8px;padding:14px 18px;margin-bottom:24px;font-size:13px;color:var(--gray5);line-height:1.6}
+.info-strip strong{color:var(--navy)}
+.btn-start{background:var(--navy);color:var(--white);border:none;padding:14px 36px;border-radius:8px;font-size:15px;font-weight:600;font-family:'IBM Plex Sans',sans-serif;cursor:pointer;transition:background .18s;letter-spacing:.3px}
+.btn-start:hover{background:var(--blue)}
+.btn-start:disabled{background:var(--gray3);cursor:not-allowed}
+
+/* ── EXAM SCREEN ── */
+#exam-screen{display:none;min-height:100vh;flex-direction:column}
+.exam-topbar{background:var(--navy);padding:0 28px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar-left{color:var(--white);font-size:13px;font-weight:500}
+.topbar-left span{opacity:.6;margin-right:6px}
+.topbar-center{color:var(--white);font-size:13px;font-weight:600;letter-spacing:.3px}
+.timer-box{background:var(--blue);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:5px 14px;display:flex;align-items:center;gap:8px}
+.timer-box .timer-icon{font-size:14px}
+.timer-val{font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;color:var(--white);min-width:60px;text-align:center}
+.timer-box.warning .timer-val{color:#FBD38D;animation:pulse 1s infinite}
+.timer-box.danger .timer-val{color:#FC8181;animation:pulse .5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+.exam-body{display:flex;flex:1;height:calc(100vh - 54px)}
+.sidebar{width:240px;background:var(--white);border-right:1px solid var(--gray2);padding:18px 14px;overflow-y:auto;flex-shrink:0}
+@media(max-width:768px){.sidebar{display:none}}
+.sidebar h3{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--gray4);margin-bottom:12px}
+.q-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:20px}
+.q-dot{width:32px;height:32px;border-radius:5px;border:1.5px solid var(--gray2);background:var(--white);cursor:pointer;font-size:11px;font-weight:600;color:var(--gray4);transition:all .15s;display:flex;align-items:center;justify-content:center}
+.q-dot:hover{border-color:var(--accent);color:var(--accent)}
+.q-dot.answered{background:var(--mid);border-color:var(--mid);color:var(--white)}
+.q-dot.flagged{background:var(--flag);border-color:var(--flag);color:var(--white)}
+.q-dot.current{border-color:var(--accent);background:#EBF4FF;color:var(--accent);font-weight:700}
+.q-dot.answered.current{border-color:var(--accent);background:var(--accent);color:var(--white)}
+.sidebar-legend{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--gray4)}
+.legend-dot{width:14px;height:14px;border-radius:3px;flex-shrink:0}
+
+.main-content{flex:1;padding:28px 36px 100px;overflow-y:auto;max-width:760px}
+@media(max-width:768px){.main-content{padding:20px 18px 100px}}
+.q-progress{font-size:12px;color:var(--gray4);margin-bottom:6px;font-family:'IBM Plex Mono',monospace}
+.q-text{font-size:16px;font-weight:500;color:var(--navy);line-height:1.65;margin-bottom:24px}
+.options-list{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.option-btn{display:flex;align-items:flex-start;gap:14px;padding:14px 18px;border:2px solid var(--gray2);border-radius:8px;cursor:pointer;transition:all .15s;background:var(--white);text-align:left;font-family:'IBM Plex Sans',sans-serif;font-size:14px;color:var(--text);line-height:1.5;width:100%}
+.option-btn:hover{border-color:var(--accent);background:#EBF4FF}
+.option-btn.selected{border-color:var(--accent);background:#EBF4FF}
+.option-key{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--gray4);min-width:20px;padding-top:1px}
+.option-btn.selected .option-key{color:var(--accent)}
+.q-actions{display:flex;align-items:center;gap:12px;margin-top:8px}
+.flag-btn{background:none;border:1.5px solid var(--gray2);border-radius:6px;padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;color:var(--gray4);font-family:'IBM Plex Sans',sans-serif;transition:all .15s}
+.flag-btn:hover{border-color:var(--flag);color:var(--flag)}
+.flag-btn.flagged{border-color:var(--flag);color:var(--flag);background:#FFF5EB}
+
+.bottom-nav{position:fixed;bottom:0;left:240px;right:0;background:var(--white);border-top:1px solid var(--gray2);padding:14px 36px;display:flex;align-items:center;justify-content:space-between;z-index:99}
+@media(max-width:768px){.bottom-nav{left:0;padding:14px 18px}}
+.nav-btn{background:var(--white);border:1.5px solid var(--gray2);border-radius:7px;padding:10px 22px;font-size:14px;font-weight:500;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;color:var(--gray5);transition:all .15s}
+.nav-btn:hover{border-color:var(--mid);color:var(--mid)}
+.nav-btn.primary{background:var(--navy);color:var(--white);border-color:var(--navy)}
+.nav-btn.primary:hover{background:var(--blue)}
+.nav-btn:disabled{opacity:.4;cursor:not-allowed}
+.nav-center{font-size:12px;color:var(--gray4);font-family:'IBM Plex Mono',monospace}
+
+/* ── REVIEW SCREEN ── */
+#review-screen{display:none;min-height:100vh;flex-direction:column}
+.review-body{max-width:820px;margin:0 auto;padding:36px 28px}
+.review-body h2{font-size:22px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.review-body>p{font-size:14px;color:var(--gray4);margin-bottom:24px}
+.review-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.review-stat{background:var(--white);border:1px solid var(--gray2);border-radius:8px;padding:16px;text-align:center}
+.review-stat .num{font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:700;color:var(--navy)}
+.review-stat .lbl{font-size:12px;color:var(--gray4);margin-top:2px}
+.review-list{background:var(--white);border:1px solid var(--gray2);border-radius:10px;overflow:hidden;margin-bottom:24px}
+.review-item{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--gray2);cursor:pointer;transition:background .15s}
+.review-item:last-child{border-bottom:none}
+.review-item:hover{background:var(--gray1)}
+.ri-num{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--gray4);min-width:28px}
+.ri-text{flex:1;font-size:13px;color:var(--text);line-height:1.4}
+.ri-status{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+.ri-status.answered{background:#EBF8FF;color:var(--accent)}
+.ri-status.unanswered{background:#FFF5F5;color:var(--red)}
+.ri-status.flagged{background:#FFF5EB;color:var(--flag)}
+.submit-section{display:flex;align-items:center;gap:14px}
+.btn-submit{background:#276749;color:var(--white);border:none;padding:14px 32px;border-radius:8px;font-size:15px;font-weight:600;font-family:'IBM Plex Sans',sans-serif;cursor:pointer;transition:background .18s}
+.btn-submit:hover{background:#22543D}
+.btn-back-exam{background:var(--white);border:1.5px solid var(--gray2);color:var(--gray5);padding:13px 24px;border-radius:8px;font-size:14px;font-weight:500;font-family:'IBM Plex Sans',sans-serif;cursor:pointer}
+.btn-back-exam:hover{border-color:var(--mid);color:var(--mid)}
+
+/* ── RESULTS SCREEN ── */
+#results-screen{display:none;min-height:100vh;padding:36px 24px;background:var(--gray1)}
+.results-inner{max-width:780px;margin:0 auto}
+.results-card{background:var(--white);border:1px solid var(--gray2);border-radius:12px;overflow:hidden;margin-bottom:18px}
+.results-hero{padding:36px;text-align:center}
+.verdict-badge{display:inline-flex;align-items:center;gap:10px;padding:10px 24px;border-radius:50px;font-size:20px;font-weight:700;margin-bottom:16px}
+.verdict-badge.pass{background:var(--green-bg);color:var(--green)}
+.verdict-badge.fail{background:var(--red-bg);color:var(--red)}
+.score-big{font-family:'IBM Plex Mono',monospace;font-size:56px;font-weight:700;line-height:1;margin-bottom:6px}
+.score-big.pass{color:var(--green)}
+.score-big.fail{color:var(--red)}
+.score-sub{font-size:14px;color:var(--gray4)}
+.results-meta{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--gray2)}
+.rm-item{padding:18px;text-align:center;border-right:1px solid var(--gray2)}
+.rm-item:last-child{border-right:none}
+.rm-num{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;color:var(--navy)}
+.rm-lbl{font-size:12px;color:var(--gray4);margin-top:2px}
+.section-breakdown{padding:24px 28px}
+.section-breakdown h3{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px}
+.topic-row{margin-bottom:14px}
+.topic-row-header{display:flex;justify-content:space-between;margin-bottom:5px}
+.topic-name{font-size:13px;font-weight:500;color:var(--gray5)}
+.topic-pct{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--navy)}
+.progress-track{background:var(--gray2);border-radius:4px;height:8px;overflow:hidden}
+.progress-fill{height:8px;border-radius:4px;transition:width .6s ease}
+.review-answers{background:var(--white);border:1px solid var(--gray2);border-radius:12px;overflow:hidden;margin-bottom:18px}
+.review-header{padding:18px 24px;border-bottom:1px solid var(--gray2);display:flex;align-items:center;justify-content:space-between}
+.review-header h3{font-size:15px;font-weight:600;color:var(--navy)}
+.toggle-review{background:none;border:1.5px solid var(--gray2);border-radius:6px;padding:6px 14px;font-size:13px;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;color:var(--gray5)}
+.answer-list{display:none}
+.answer-list.open{display:block}
+.answer-item{padding:16px 24px;border-bottom:1px solid var(--gray2)}
+.answer-item:last-child{border-bottom:none}
+.ai-q{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:8px}
+.ai-row{display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:3px}
+.ai-label{font-size:11px;font-weight:600;text-transform:uppercase;color:var(--gray4);min-width:76px}
+.ai-correct{color:var(--green);font-weight:500}
+.ai-wrong{color:var(--red);font-weight:500}
+.ai-exp{font-size:12px;color:var(--gray4);margin-top:6px;line-height:1.5;padding:8px 10px;background:var(--gray1);border-radius:5px}
+.retake-section{text-align:center;padding:12px}
+.btn-retake{background:var(--navy);color:var(--white);border:none;padding:14px 36px;border-radius:8px;font-size:15px;font-weight:600;font-family:'IBM Plex Sans',sans-serif;cursor:pointer;margin-right:12px}
+.btn-menu{background:var(--white);border:1.5px solid var(--gray2);color:var(--gray5);padding:13px 24px;border-radius:8px;font-size:14px;font-weight:500;font-family:'IBM Plex Sans',sans-serif;cursor:pointer}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--white);border-radius:12px;padding:32px;max-width:420px;width:90%;text-align:center}
+.modal h3{font-size:18px;font-weight:700;color:var(--navy);margin-bottom:10px}
+.modal p{font-size:14px;color:var(--gray4);line-height:1.6;margin-bottom:24px}
+.modal-btns{display:flex;gap:10px;justify-content:center}
+.modal-btn-cancel{background:var(--white);border:1.5px solid var(--gray2);color:var(--gray5);padding:11px 24px;border-radius:7px;font-size:14px;cursor:pointer;font-family:'IBM Plex Sans',sans-serif}
+.modal-btn-confirm{background:var(--green);color:var(--white);border:none;padding:11px 24px;border-radius:7px;font-size:14px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif}
+</style>
+</head>
+<body>
+
+<!-- ═══════ WELCOME ═══════ -->
+<div id="welcome">
+  <div class="psi-header">
+    <div class="psi-logo">PSI</div>
+    <div class="psi-title">
+      <h1>Minnesota Board of Cosmetologist Examiners</h1>
+      <p>Esthetician Licensing Examination — Candidate Testing Portal</p>
+    </div>
+  </div>
+  <div class="welcome-body">
+    <h2>Select Your Examination</h2>
+    <p>Choose one exam to begin. Each exam is timed and closed-book, matching the actual PSI format.</p>
+    <div class="exam-grid">
+      <div class="exam-opt" onclick="selectExam(0,this)">
+        <div class="exam-num">Exam 01</div>
+        <div class="exam-name">General Theory</div>
+        <div class="exam-meta">
+          <span>📝 <strong>75</strong> questions</span>
+          <span>⏱ <strong>90 minutes</strong></span>
+          <span>🎯 Need <strong>75%</strong> to pass</span>
+        </div>
+      </div>
+      <div class="exam-opt" onclick="selectExam(1,this)">
+        <div class="exam-num">Exam 02</div>
+        <div class="exam-name">State Laws &amp; Rules</div>
+        <div class="exam-meta">
+          <span>📝 <strong>30</strong> questions</span>
+          <span>⏱ <strong>60 minutes</strong></span>
+          <span>🎯 Need <strong>75%</strong> to pass</span>
+        </div>
+      </div>
+      <div class="exam-opt" onclick="selectExam(2,this)">
+        <div class="exam-num">Exam 03</div>
+        <div class="exam-name">Written Practical</div>
+        <div class="exam-meta">
+          <span>📝 <strong>50</strong> questions</span>
+          <span>⏱ <strong>90 minutes</strong></span>
+          <span>🎯 Need <strong>75%</strong> to pass</span>
+        </div>
+      </div>
+    </div>
+    <div class="info-strip">
+      <strong>📋 Instructions:</strong> This is a closed-book, timed exam. You may navigate between questions freely and flag questions to revisit. Your score and answer review will appear immediately after submission. All questions are multiple choice with one correct answer. Passing score: <strong>75%</strong> on each exam.
+    </div>
+    <button class="btn-start" id="startBtn" onclick="startExam()" disabled>Select an exam to begin</button>
+  </div>
+</div>
+
+<!-- ═══════ EXAM SCREEN ═══════ -->
+<div id="exam-screen">
+  <div class="exam-topbar">
+    <div class="topbar-left"><span>MN Board of Cosmetology</span> Esthetician Examination</div>
+    <div class="topbar-center" id="topbar-exam-name">General Theory</div>
+    <div class="timer-box" id="timerBox">
+      <span class="timer-icon">⏱</span>
+      <span class="timer-val" id="timerVal">90:00</span>
+    </div>
+  </div>
+  <div class="exam-body">
+    <div class="sidebar">
+      <h3>Question Navigator</h3>
+      <div class="q-grid" id="qGrid"></div>
+      <div class="sidebar-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--white);border:1.5px solid var(--gray2)"></div> Not answered</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--mid)"></div> Answered</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--flag)"></div> Flagged</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div> Current</div>
+      </div>
+    </div>
+    <div class="main-content">
+      <div class="q-progress" id="qProgress">Question 1 of 75</div>
+      <div class="q-text" id="qText"></div>
+      <div class="options-list" id="optionsList"></div>
+      <div class="q-actions">
+        <button class="flag-btn" id="flagBtn" onclick="toggleFlag()">🚩 Flag for Review</button>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-btn" id="prevBtn" onclick="prevQ()">← Previous</button>
+    <span class="nav-center" id="navCenter"></span>
+    <div style="display:flex;gap:10px">
+      <button class="nav-btn" onclick="goToReview()">Review All</button>
+      <button class="nav-btn primary" id="nextBtn" onclick="nextQ()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ REVIEW SCREEN ═══════ -->
+<div id="review-screen">
+  <div style="background:var(--navy);padding:14px 28px;display:flex;align-items:center;justify-content:space-between">
+    <div style="color:white;font-weight:600;font-size:14px">Review &amp; Submit</div>
+    <div class="timer-box" id="reviewTimerBox"><span class="timer-icon">⏱</span><span class="timer-val" id="reviewTimerVal">--:--</span></div>
+  </div>
+  <div class="review-body">
+    <h2>Review Your Answers</h2>
+    <p>Check your responses before submitting. You can return to any question by clicking it.</p>
+    <div class="review-stats">
+      <div class="review-stat"><div class="num" id="rv-answered">0</div><div class="lbl">Answered</div></div>
+      <div class="review-stat"><div class="num" id="rv-unanswered">0</div><div class="lbl">Unanswered</div></div>
+      <div class="review-stat"><div class="num" id="rv-flagged">0</div><div class="lbl">Flagged</div></div>
+    </div>
+    <div class="review-list" id="reviewList"></div>
+    <div class="submit-section">
+      <button class="btn-submit" onclick="confirmSubmit()">✓ Submit Examination</button>
+      <button class="btn-back-exam" onclick="backToExam()">← Return to Exam</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ RESULTS SCREEN ═══════ -->
+<div id="results-screen">
+  <div class="results-inner">
+    <div class="results-card">
+      <div class="results-hero">
+        <div class="verdict-badge" id="verdictBadge"></div>
+        <div class="score-big" id="scoreBig"></div>
+        <div class="score-sub" id="scoreSub"></div>
+      </div>
+      <div class="results-meta">
+        <div class="rm-item"><div class="rm-num" id="rm-correct"></div><div class="rm-lbl">Correct</div></div>
+        <div class="rm-item"><div class="rm-num" id="rm-total"></div><div class="rm-lbl">Total Questions</div></div>
+        <div class="rm-item"><div class="rm-num" id="rm-pass">75%</div><div class="rm-lbl">Passing Score</div></div>
+      </div>
+    </div>
+    <div class="results-card">
+      <div class="section-breakdown">
+        <h3>Performance by Topic</h3>
+        <div id="topicBreakdown"></div>
+      </div>
+    </div>
+    <div class="review-answers results-card">
+      <div class="review-header">
+        <h3>Answer Review</h3>
+        <button class="toggle-review" onclick="toggleAnswerReview()">Show All Answers ▼</button>
+      </div>
+      <div class="answer-list" id="answerList"></div>
+    </div>
+    <div class="retake-section">
+      <button class="btn-retake" onclick="retake()">↺ Retake This Exam</button>
+      <button class="btn-menu" onclick="backToMenu()">← Exam Menu</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ MODAL ═══════ -->
+<div class="modal-overlay" id="submitModal">
+  <div class="modal">
+    <h3>Submit Examination?</h3>
+    <p>Once submitted, you cannot change your answers. Make sure you have reviewed all flagged and unanswered questions.</p>
+    <div class="modal-btns">
+      <button class="modal-btn-cancel" onclick="closeModal()">← Go Back</button>
+      <button class="modal-btn-confirm" onclick="submitExam()">Submit Now</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// QUESTION BANKS
+// ═══════════════════════════════════════════════════════════════════
+const BANKS = [
+
+// ── EXAM 0: GENERAL THEORY (75 questions) ──────────────────────────
+{
+  name:"General Theory",
+  minutes:90,
+  questions:[
+    {t:"Which layer of the epidermis contains melanocytes and is responsible for cell mitosis?",o:["Stratum Corneum","Stratum Granulosum","Stratum Lucidum","Stratum Germinativum (Basale)"],a:3,topic:"Skin Structure",ex:"The stratum germinativum (basal layer) is the deepest epidermal layer. It produces new cells through mitosis and houses melanocytes that produce melanin."},
+    {t:"What is the approximate pH of healthy skin?",o:["6.5–7.5","7.0–8.0","4.5–5.5","3.0–4.0"],a:2,topic:"Skin Structure",ex:"Skin has an acidic pH of 4.5–5.5, forming the 'acid mantle' that protects against pathogens. Products at this pH level are most compatible with skin."},
+    {t:"Which gland produces sebum (skin oil)?",o:["Eccrine gland","Apocrine gland","Lacrimal gland","Sebaceous gland"],a:3,topic:"Skin Structure",ex:"Sebaceous glands produce sebum and are connected to hair follicles. They are absent on the palms and soles. Overactive sebaceous glands lead to oily skin and comedones."},
+    {t:"The stratum corneum is composed primarily of:",o:["Living cells actively dividing","Melanocytes producing pigment","Dead keratinized cells","Collagen and elastin fibers"],a:2,topic:"Skin Structure",ex:"The stratum corneum is the outermost epidermal layer, made of dead, flat keratinized cells called corneocytes. It forms the skin's first protective barrier."},
+    {t:"Collagen and elastin fibers are found in which skin layer?",o:["Epidermis","Stratum Corneum","Hypodermis","Dermis"],a:3,topic:"Skin Structure",ex:"The dermis contains collagen (firmness) and elastin (elasticity) fibers, produced by fibroblasts. As we age, collagen decreases, leading to wrinkles and sagging."},
+    {t:"What is the correct order of the epidermis from deepest to outermost?",o:["Corneum, Lucidum, Granulosum, Spinosum, Germinativum","Spinosum, Germinativum, Granulosum, Lucidum, Corneum","Germinativum, Granulosum, Spinosum, Lucidum, Corneum","Germinativum, Spinosum, Granulosum, Lucidum, Corneum"],a:3,topic:"Skin Structure",ex:"Mnemonic: 'Come, Let's Get Some Beer' — Corneum, Lucidum, Granulosum, Spinosum, Basale (Germinativum). The basal layer is deepest; corneum is outermost."},
+    {t:"Eccrine sweat glands are found:",o:["Only in armpits and groin","Only on palms and soles","Primarily on the face","All over the body"],a:3,topic:"Skin Structure",ex:"Eccrine glands are distributed all over the body and produce a clear, odorless sweat for thermoregulation. Apocrine glands are found in armpits and groin and produce thicker secretions."},
+    {t:"Which cell type provides immune defense in the epidermis?",o:["Keratinocytes","Melanocytes","Fibroblasts","Langerhans cells"],a:3,topic:"Skin Structure",ex:"Langerhans cells are immune cells located in the epidermis that detect and respond to pathogens and allergens, helping protect the body from infection and foreign substances."},
+    {t:"The hypodermis (subcutaneous layer) is primarily composed of:",o:["Muscle tissue","Nerve tissue","Cartilage","Adipose (fat) tissue"],a:3,topic:"Skin Structure",ex:"The hypodermis lies below the dermis and is composed mainly of fat (adipose) tissue. It provides insulation, cushioning, and energy storage, and anchors the skin to underlying muscles."},
+    {t:"What is alipidic skin?",o:["Skin that lacks water","Skin with excess oil production","Skin that lacks oil production","Skin with excess water retention"],a:2,topic:"Skin Conditions",ex:"Alipidic skin lacks oil (lipids) — the sebaceous glands are underactive. This is different from dehydrated skin, which lacks water. Alipidic skin is a skin TYPE, not a condition."},
+    {t:"A blackhead (open comedone) appears dark because:",o:["It contains embedded dirt","The trapped sebum is infected","Melanin oxidizes when exposed to air","It contains dried blood"],a:2,topic:"Skin Conditions",ex:"Blackheads are open comedones — the follicle is open to air, causing the melanin and sebum mixture to oxidize and turn dark. They are NOT caused by dirt."},
+    {t:"Which type of lesion should NEVER be extracted by an esthetician?",o:["Open comedone (blackhead)","Milia","Closed comedone (whitehead)","Cyst or nodule"],a:3,topic:"Skin Conditions",ex:"Cysts and nodules are deep, inflamed lesions. Attempting to extract them can cause scarring, spread infection, and serious skin damage. Clients should be referred to a dermatologist."},
+    {t:"Rosacea is best described as:",o:["A bacterial skin infection","A chronic inflammatory condition causing persistent redness","A fungal skin condition","A type of hormonal acne"],a:1,topic:"Skin Conditions",ex:"Rosacea is a chronic inflammatory skin condition characterized by redness, flushing, and sometimes telangiectasia (dilated capillaries). Heat, harsh products, and steam can trigger flare-ups."},
+    {t:"Milia are best described as:",o:["Infected sebaceous glands","Open comedones filled with oil","Hard, keratin-filled cysts beneath the skin surface","Deep-infected pustules"],a:2,topic:"Skin Conditions",ex:"Milia are small, hard, white bumps caused by trapped keratin beneath the skin's surface. They commonly appear around the eyes and cheeks and can be removed by a licensed esthetician using a lancet."},
+    {t:"Post-inflammatory hyperpigmentation (PIH) is caused by:",o:["Sun damage alone","Lack of melanin in the skin","Inflammation triggering excess melanin production","A fungal skin infection"],a:2,topic:"Skin Conditions",ex:"PIH occurs when inflammation (from acne, waxing, or injury) triggers melanocytes to overproduce melanin. It is more common in deeper Fitzpatrick skin types and can be worsened by sun exposure."},
+    {t:"Vitiligo is characterized by:",o:["Excess melanin production (dark patches)","Loss of melanin producing pale/white patches","Persistent redness and flushing","Excess sebum and comedones"],a:1,topic:"Skin Conditions",ex:"Vitiligo is an autoimmune condition where melanocytes are destroyed, resulting in depigmented (white or light) patches on the skin. It is not contagious."},
+    {t:"The Fitzpatrick scale classifies skin by:",o:["Sebum oil content","Age and skin thickness","Reaction to sun exposure (burning/tanning)","Pore size and texture"],a:2,topic:"Aging & Fitzpatrick",ex:"The Fitzpatrick scale (Types I–VI) classifies skin based on its genetic response to UV exposure — how easily it burns and tans. It guides treatment decisions for chemical peels, laser, and other exfoliating services."},
+    {t:"Which Fitzpatrick type always burns and never tans?",o:["Type III","Type IV","Type II","Type I"],a:3,topic:"Aging & Fitzpatrick",ex:"Fitzpatrick Type I is the fairest skin type — very pale, often with red or blonde hair. It always burns in the sun and never develops a tan, making it most susceptible to sun damage."},
+    {t:"AHAs (Alpha Hydroxy Acids) are best suited for which skin concern?",o:["Oily, acne-prone skin with blackheads","Sensitive skin with rosacea","Dry, dehydrated, aging skin","Combination skin with large pores only"],a:0,topic:"Chemistry & Ingredients",ex:"AHAs are water-soluble exfoliants ideal for dry, aging, or sun-damaged skin. Glycolic acid (from sugarcane) has the smallest molecule and deepest penetration. Lactic acid is gentler and has hydrating properties."},
+    {t:"BHAs (Beta Hydroxy Acids) are oil-soluble, making them most effective for:",o:["Dry and dehydrated skin","Mature skin with fine lines","Oily and acne-prone skin","Sensitive skin prone to reactions"],a:2,topic:"Chemistry & Ingredients",ex:"Because BHAs are oil-soluble, they can penetrate into the sebaceous follicle to dissolve excess oil and dead skin cells from within. Salicylic acid is the most common BHA."},
+    {t:"Salicylic acid is an example of which type of chemical exfoliant?",o:["AHA (Alpha Hydroxy Acid)","Retinoid","Enzyme","BHA (Beta Hydroxy Acid)"],a:3,topic:"Chemistry & Ingredients",ex:"Salicylic acid is the most widely used BHA. It is derived from willow bark and is oil-soluble, allowing it to penetrate into follicles to clear congestion, making it ideal for oily and acne-prone skin."},
+    {t:"Hyaluronic acid is best classified as a:",o:["Occlusive (barrier-forming)","Emollient (softening)","Exfoliant","Humectant (moisture-drawing)"],a:3,topic:"Chemistry & Ingredients",ex:"Hyaluronic acid is a powerful humectant that draws water from the environment into the skin. It can hold up to 1,000 times its weight in water and occurs naturally in the body."},
+    {t:"Which ingredient creates a physical barrier on the skin surface to prevent moisture loss?",o:["Glycerin","Hyaluronic acid","Niacinamide","Petrolatum"],a:3,topic:"Chemistry & Ingredients",ex:"Petrolatum (petroleum jelly) is an occlusive ingredient that forms a barrier on the skin to lock in moisture and prevent transepidermal water loss (TEWL). Humectants attract water; occlusives seal it in."},
+    {t:"Vitamin C (ascorbic acid) is primarily known for which skin benefit?",o:["Deep pore cleansing and oil control","Antioxidant protection and skin brightening","Barrier repair and hydration","Accelerated exfoliation"],a:1,topic:"Chemistry & Ingredients",ex:"Vitamin C is a powerful antioxidant that neutralizes free radicals, brightens hyperpigmentation, and stimulates collagen production. It is unstable and oxidizes easily (turns orange/brown when expired)."},
+    {t:"Which vitamin is also known as retinol?",o:["Vitamin C","Vitamin B3 (Niacinamide)","Vitamin E","Vitamin A"],a:3,topic:"Chemistry & Ingredients",ex:"Vitamin A (retinol) is a retinoid that increases skin cell turnover, stimulates collagen, and reduces fine lines. It is photosensitizing and can cause purging during initial use. Accutane is a prescription retinoid."},
+    {t:"Niacinamide is another name for:",o:["Vitamin A","Vitamin C","Vitamin E","Vitamin B3"],a:3,topic:"Chemistry & Ingredients",ex:"Niacinamide (Vitamin B3) reduces redness, minimizes enlarged pores, controls sebum, brightens skin tone, and strengthens the skin barrier. It is well-tolerated by most skin types including sensitive skin."},
+    {t:"UVA rays are primarily responsible for:",o:["Sunburn and surface skin damage","Vitamin D synthesis in the skin","Premature aging, wrinkles, and deep pigmentation changes","Killing surface bacteria"],a:2,topic:"Chemistry & Ingredients",ex:"UVA ('Aging') rays penetrate deeper into the dermis and cause collagen breakdown, wrinkles, and hyperpigmentation. They are present year-round, even on cloudy days and through glass. UVB rays cause sunburn."},
+    {t:"SPF 30 blocks approximately what percentage of UVB rays?",o:["50%","75%","90%","97%"],a:3,topic:"Chemistry & Ingredients",ex:"SPF 30 blocks approximately 97% of UVB rays. SPF 50 blocks about 98%. No sunscreen blocks 100%. Broad-spectrum SPF protects against both UVA and UVB rays."},
+    {t:"Which type of current does galvanic equipment use?",o:["Alternating current (AC)","Microcurrent only","High-frequency current","Direct current (DC)"],a:3,topic:"Electricity & Equipment",ex:"Galvanic machines use direct current (DC). The two modalities are desincrustation (negative pole — softens sebum for cleansing) and iontophoresis (positive pole — drives water-based product into skin)."},
+    {t:"Desincrustation uses which pole of galvanic current to soften sebum?",o:["Positive pole","Neutral setting","Either pole produces the same effect","Negative pole"],a:3,topic:"Electricity & Equipment",ex:"Desincrustation uses the negative pole, which creates an alkaline reaction that softens sebum and prepares the skin for extractions. The positive pole is used for iontophoresis (product penetration)."},
+    {t:"High-frequency current is used in esthetics primarily because it produces:",o:["Deep muscle stimulation","Germicidal ozone effective against bacteria","Lymphatic drainage stimulation","Collagen production through heat"],a:1,topic:"Electricity & Equipment",ex:"High-frequency current (AC) generates germicidal ozone through its interaction with oxygen in the air. This makes it effective for treating acne, killing surface bacteria, and stimulating circulation."},
+    {t:"Which electrical modality is often called the 'non-surgical facelift'?",o:["High frequency","Galvanic iontophoresis","Ultrasound","Microcurrent"],a:3,topic:"Electricity & Equipment",ex:"Microcurrent delivers very low-level electrical current that mimics the body's bioelectrical field, stimulating facial muscles and increasing ATP production for a toning and lifting effect."},
+    {t:"LED red light therapy is primarily used to:",o:["Kill acne-causing bacteria","Treat hyperpigmentation","Stimulate anti-aging and collagen production","Increase oil production"],a:2,topic:"Electricity & Equipment",ex:"Red LED light (630–700nm) stimulates fibroblasts to produce collagen and elastin, promoting anti-aging effects. Blue LED (~415nm) kills acne bacteria. Near-infrared penetrates deeper for healing."},
+    {t:"Under a Wood's Lamp, oily areas of the skin appear as which color?",o:["White or ivory","Purple or dark","Light pink","Orange or pink-orange"],a:3,topic:"Electricity & Equipment",ex:"Wood's Lamp colors: orange = oily; white/ivory = normal; purple = dry/dehydrated; dark spots = hyperpigmentation; bright white = healthy hydrated areas. Analysis is done in a darkened room."},
+    {t:"A contraindication for using a facial steamer includes:",o:["Dry, flaky skin","Normal to combination skin","Oily or congested skin","Rosacea or couperose skin"],a:3,topic:"Electricity & Equipment",ex:"Steam increases circulation and vasodilation. For rosacea or couperose skin (dilated capillaries), this can worsen redness and irritation. Warm towels may be used as an alternative."},
+    {t:"Bacteria are classified by shape. Which shape are cocci bacteria?",o:["Rod-shaped","Spiral or corkscrew-shaped","Flat or disc-shaped","Round or spherical"],a:3,topic:"Microbiology & Sanitation",ex:"Bacteria are classified by shape: Cocci = round (e.g., Staphylococcus), Bacilli = rod-shaped, Spirilla = spiral-shaped. Pathogens are harmful bacteria that can cause disease."},
+    {t:"Which type of microorganism requires a living host cell to reproduce?",o:["Bacteria","Fungi","Parasite","Virus"],a:3,topic:"Microbiology & Sanitation",ex:"Viruses cannot reproduce on their own — they must invade a living host cell and use its machinery to replicate. Herpes simplex virus (cold sores) is a common concern in esthetics."},
+    {t:"Tinea (ringworm) is a skin infection caused by:",o:["Bacteria","A virus","A parasite","Fungi"],a:3,topic:"Microbiology & Sanitation",ex:"Tinea is a fungal infection of the skin, hair, or nails. Despite its name, it has nothing to do with worms. Common types include athlete's foot (tinea pedis) and ringworm (tinea corporis)."},
+    {t:"Sanitization is defined as the process that:",o:["Kills all microorganisms including bacterial spores","Kills most pathogens on non-porous surfaces","Destroys only viruses and fungi","Removes visible dirt and debris, reducing microbial levels"],a:3,topic:"Microbiology & Sanitation",ex:"Sanitization is the lowest level of decontamination — it removes dirt and reduces (but does not eliminate) microbial levels. Handwashing is an example. Disinfection kills most pathogens; sterilization kills all."},
+    {t:"Which level of decontamination kills most pathogens but does NOT destroy bacterial spores?",o:["Sanitization","Sterilization","Antisepsis","Disinfection"],a:3,topic:"Microbiology & Sanitation",ex:"Disinfection kills most pathogens on non-porous surfaces but does not destroy spores. EPA-registered disinfectants (like Barbicide) are required for salon tools. Sterilization (autoclave) destroys everything including spores."},
+    {t:"EPA-registered disinfectants must remain on surfaces for the required contact time to be effective. What does this mean?",o:["They can be wiped off immediately after application","The surface must stay visibly wet for the manufacturer's required time","They only need to be left on for 30 seconds","Any amount of time is sufficient if wiped thoroughly"],a:1,topic:"Microbiology & Sanitation",ex:"Contact time is critical — the disinfectant must remain WET on the surface for the full required contact time (listed on product label). Wiping off too soon makes the disinfection ineffective."},
+    {t:"Which of the following is a parasitic skin condition that is a contraindication to service?",o:["Tinea (ringworm)","Herpes simplex (cold sores)","Impetigo","Scabies"],a:3,topic:"Microbiology & Sanitation",ex:"Scabies is caused by tiny mites (Sarcoptes scabiei) that burrow into the skin, causing intense itching. It is highly contagious and is an absolute contraindication for any salon service."},
+    {t:"OSHA stands for:",o:["Official Salon Hygiene Administration","Office of Skin Health and Esthetics","Organization of Standards for Health Artisans","Occupational Safety and Health Administration"],a:3,topic:"Microbiology & Sanitation",ex:"OSHA (Occupational Safety and Health Administration) sets and enforces workplace safety standards, including requirements for chemical handling, PPE, and exposure to bloodborne pathogens."},
+    {t:"SDS (Safety Data Sheets) must be available in the salon for:",o:["All retail products sold to clients","All chemicals used in the salon","Only chemical peel solutions","Only products that require mixing"],a:1,topic:"Microbiology & Sanitation",ex:"SDS sheets (formerly MSDS) must be maintained for all chemicals used in the salon. They contain hazard information, safe handling instructions, emergency first aid, and disposal guidelines."},
+    {t:"Free radicals are best described as:",o:["Skin lipids that maintain the barrier","Antioxidants that protect skin cells","Beneficial growth factors in the dermis","Unstable molecules that damage skin cells and accelerate aging"],a:3,topic:"Aging & Fitzpatrick",ex:"Free radicals are unstable molecules missing an electron. They 'steal' electrons from skin cells, causing oxidative damage. UV exposure, pollution, and smoking generate free radicals. Antioxidants neutralize them."},
+    {t:"Intrinsic skin aging is primarily caused by:",o:["UV exposure","Pollution and environmental factors","Genetics and the natural passage of time","Smoking and poor diet"],a:2,topic:"Aging & Fitzpatrick",ex:"Intrinsic aging is inevitable and genetically programmed — collagen decreases approximately 1% per year after age 20, cell turnover slows, and sebaceous glands become less active. This cannot be stopped, only slowed."},
+    {t:"The number one cause of extrinsic (premature) aging is:",o:["Smoking","Pollution","Poor nutrition","UV/sun exposure"],a:3,topic:"Aging & Fitzpatrick",ex:"UV exposure is responsible for up to 90% of visible premature skin aging (photoaging). UV rays break down collagen and elastin, cause hyperpigmentation, and increase the risk of skin cancer. Daily SPF use is essential."},
+    {t:"Which of the following is a primary function of the skin?",o:["Hormone production","Digestion of nutrients","Blood filtration","Thermoregulation (heat regulation)"],a:3,topic:"Skin Structure",ex:"The skin functions as: Protection, Absorption, Secretion, Excretion, Sensation, Thermoregulation (PASSES). Sweat glands help regulate body temperature through perspiration and evaporation."},
+    {t:"Fibroblasts are cells in the dermis responsible for producing:",o:["Melanin pigment","Keratin for barrier protection","Sebum and sweat","Collagen and elastin"],a:3,topic:"Skin Structure",ex:"Fibroblasts are the main cells of the dermis. They synthesize collagen, elastin, and other components of the extracellular matrix. Stimulating fibroblast activity is a key goal of anti-aging treatments."},
+    {t:"Which skin condition is characterized by telangiectasia (dilated, visible capillaries)?",o:["Acne vulgaris","Eczema","Psoriasis","Rosacea"],a:3,topic:"Skin Conditions",ex:"Telangiectasia (visible broken or dilated capillaries, also called couperose) is common in rosacea. It can also result from sun damage, harsh treatments, or hereditary factors. High-frequency and steam should be avoided."},
+    {t:"A papule differs from a pustule in that a papule:",o:["Is a larger, deeper lesion","Contains pus inside the follicle","Is found only on the back and chest","Contains no pus and is a solid raised lesion"],a:3,topic:"Skin Conditions",ex:"A papule is a solid, raised, inflamed lesion with no pus. A pustule is a raised lesion that contains pus (an infected papule). Both are forms of inflammatory acne and should not be aggressively extracted."},
+    {t:"Combination skin is typically characterized by:",o:["Dry T-zone and oily cheeks","Even oiliness or dryness throughout all areas","No discernible pattern of oiliness","Oily T-zone (forehead, nose, chin) and dry cheeks"],a:3,topic:"Skin Conditions",ex:"Combination skin has an oily T-zone (forehead, nose, and chin) with normal to dry cheeks. Treatment should address both zones differently — lighter products on oily areas, richer products on dry areas."},
+    {t:"Which of the following ingredients is classified as an occlusive?",o:["Glycerin","Hyaluronic acid","Lactic acid","Petrolatum (petroleum jelly)"],a:3,topic:"Chemistry & Ingredients",ex:"Occlusives (petrolatum, mineral oil, dimethicone) form a physical barrier on the skin's surface to prevent transepidermal water loss (TEWL). They are most effective when applied to already-hydrated skin."},
+    {t:"Ceramides are lipids found in the skin. Their primary function is to:",o:["Produce new skin cells","Stimulate melanin production","Reduce sebaceous gland activity","Strengthen and repair the skin barrier"],a:3,topic:"Chemistry & Ingredients",ex:"Ceramides make up approximately 50% of the skin's outer layer and are essential for the skin barrier. They hold skin cells together and prevent moisture loss. Stripping ceramides leads to dehydration and sensitivity."},
+    {t:"During facial massage, the direction of strokes should follow:",o:["The direction of facial hair growth","Blood flow patterns toward the heart","The direction of muscle fiber orientation","Lymph drainage toward lymph nodes"],a:3,topic:"Skin Structure",ex:"Facial massage should follow the direction of lymphatic drainage — toward regional lymph nodes. This helps flush waste, toxins, and excess fluid from tissues. Massage against lymph flow can cause puffiness."},
+    {t:"Which cranial nerve provides sensation to the face?",o:["CN VII — Facial nerve","CN III — Oculomotor nerve","CN X — Vagus nerve","CN V — Trigeminal nerve"],a:3,topic:"Anatomy",ex:"The trigeminal nerve (CN V) provides sensory innervation to the face in three branches: ophthalmic (forehead/eyes), maxillary (cheeks/nose), and mandibular (jaw/chin). It is the nerve blocked during dental procedures."},
+    {t:"Which cranial nerve controls the motor function of facial muscles?",o:["CN V — Trigeminal nerve","CN II — Optic nerve","CN IX — Glossopharyngeal nerve","CN VII — Facial nerve"],a:3,topic:"Anatomy",ex:"The facial nerve (CN VII) controls all voluntary facial muscle movements — smiling, blinking, frowning. Damage to this nerve causes facial paralysis (Bell's palsy). It also conveys taste from the anterior tongue."},
+    {t:"The zygomatic bone is commonly known as the:",o:["Jawbone (mandible)","Nasal bone","Forehead bone","Cheekbone"],a:3,topic:"Anatomy",ex:"The zygomatic bone (cheekbone) forms the prominence of the cheek. The mandible is the lower jaw, the maxillae form the upper jaw, and the frontal bone forms the forehead."},
+    {t:"The mandible is the:",o:["Upper jawbone (maxilla)","Cheekbone","Temple bone","Lower jawbone"],a:3,topic:"Anatomy",ex:"The mandible is the only movable bone in the skull. It forms the lower jaw and is the attachment point for the masseter muscle (chewing). It can be palpated during facial massage."},
+    {t:"Which facial muscle surrounds the eye and is responsible for closing the eye (blinking)?",o:["Frontalis","Masseter","Zygomaticus","Orbicularis oculi"],a:3,topic:"Anatomy",ex:"The orbicularis oculi is a circular muscle that surrounds the eye socket. It controls blinking and squinting. The orbicularis oris is the similar circular muscle surrounding the mouth."},
+    {t:"The platysma muscle is located in the:",o:["Forehead area","Cheek area","Area around the mouth","Neck"],a:3,topic:"Anatomy",ex:"The platysma is a broad, thin sheet of muscle covering the neck and lower face. It pulls the corners of the mouth downward and tenses the skin of the neck. Neck exercises and facial massage target this muscle."},
+    {t:"Dehydrated skin differs from dry skin in that dehydration:",o:["Is a permanent genetic skin type","Cannot occur in people with oily skin","Is caused by underactive sebaceous glands","Is a temporary condition where the skin lacks water"],a:3,topic:"Skin Conditions",ex:"Dry skin = skin TYPE (lacks oil/sebum). Dehydrated skin = temporary CONDITION (lacks water/hydration). Anyone — including oily skin types — can have dehydrated skin. Causes include weather, diet, and skincare choices."},
+    {t:"The pinch test is used to assess:",o:["Skin oiliness and sebum production","Presence of active acne lesions","Fitzpatrick skin type","Skin dehydration"],a:3,topic:"Skin Conditions",ex:"Lightly pinch the skin on the cheek. If it wrinkles, tents, or is slow to bounce back, the skin is dehydrated. Dehydrated skin also appears dull and shows fine lines that worsen with expression."},
+    {t:"Which topical ingredient is known to be photosensitizing and requires extra sun protection?",o:["Hyaluronic acid","Niacinamide","Ceramides","Retinoids (Vitamin A)"],a:3,topic:"Chemistry & Ingredients",ex:"Retinoids increase skin cell turnover, which thins the stratum corneum temporarily and makes skin more sensitive to UV damage. Clients using retinoids should always use daily SPF and avoid daytime use."},
+    {t:"Accutane (isotretinoin) is an absolute contraindication for which esthetic services?",o:["Basic facial massage only","LED light therapy","Steam treatments","Chemical exfoliation and waxing"],a:3,topic:"Skin Conditions",ex:"Isotretinoin (Accutane) dramatically thins and sensitizes the skin. Chemical exfoliants can cause severe irritation and burns, and waxing can cause skin lifting (tearing). These contraindications apply during use and for 6–12 months after."},
+    {t:"Which of the following best describes an emollient?",o:["Draws moisture from the environment into the skin","Creates a barrier on skin to prevent moisture loss","Acts as a chemical exfoliant","Softens and smooths the skin surface"],a:3,topic:"Chemistry & Ingredients",ex:"Emollients fill in the microscopic gaps between skin cells, making skin feel smooth and soft. Examples include plant oils, shea butter, and fatty acids. They work differently from humectants (water-attracting) and occlusives (sealing)."},
+    {t:"The stratum lucidum is found only in:",o:["The face, particularly on the nose","The neck and décolletage","Areas with dense hair follicles","Thick skin of the palms and soles"],a:3,topic:"Skin Structure",ex:"The stratum lucidum is a clear, translucent layer found only in the thick, hairless skin of the palms and soles. It is sometimes counted as a 5th distinct layer of the epidermis in these locations."},
+    {t:"Which of the following is TRUE about sensitive skin?",o:["It is always visibly red at all times","It is the same as being diagnosed with a skin allergy","It always has visible dilated capillaries","It reacts easily to products, weather, or stimuli with redness or irritation"],a:3,topic:"Skin Conditions",ex:"Sensitive skin is a skin TYPE characterized by a heightened reactivity to products, environmental factors, and physical stimuli. Sensitivity can accompany any skin type and requires gentle, fragrance-free products."},
+    {t:"Which two skin functions are primarily responsible for excreting toxins through the skin?",o:["Absorption and protection","Sensation and thermoregulation","Secretion and excretion","Protection and thermoregulation"],a:2,topic:"Skin Structure",ex:"Secretion (from sebaceous glands producing sebum) and excretion (from sweat glands releasing waste products like urea and lactic acid) are the skin functions related to removing substances from the body."},
+    {t:"Glycolic acid is derived from which natural source?",o:["Milk","Willow bark","Apples","Sugarcane"],a:3,topic:"Chemistry & Ingredients",ex:"Glycolic acid is derived from sugarcane. It is the smallest AHA molecule, allowing the deepest penetration. Lactic acid comes from milk; malic acid from apples; citric acid from citrus. Salicylic acid (BHA) comes from willow bark."},
+    {t:"Which of the following describes the purpose of the skin's acid mantle?",o:["To increase pH and make skin more alkaline","To provide a mildly acidic barrier that discourages pathogen growth","To increase melanin production","To reduce sebaceous gland activity"],a:1,topic:"Skin Structure",ex:"The acid mantle is a thin, slightly acidic film on the skin's surface (pH 4.5–5.5) composed of sebum, sweat, and dead skin cells. It protects against bacteria, viruses, and environmental contaminants."},
+    {t:"During facial massage, which movement consists of light, rhythmic tapping or percussion?",o:["Effleurage","Petrissage","Friction","Tapotement"],a:3,topic:"Anatomy",ex:"Tapotement uses rapid, light tapping, patting, or percussion movements. It stimulates nerve endings and increases circulation. It is typically used on the cheeks and is contraindicated over thin, sensitive, or broken skin."},
+    {t:"The Fitzpatrick skin type that never burns and has deeply pigmented skin would be classified as:",o:["Type I","Type III","Type IV","Type VI"],a:3,topic:"Aging & Fitzpatrick",ex:"Fitzpatrick Type VI has the most melanin — it never burns and deeply tans. While richly pigmented skin offers some natural UV protection, all skin types can develop skin cancer and should use daily SPF."},
+  ]
+},
+
+// ── EXAM 1: STATE LAWS & RULES (30 questions) ──────────────────────
+{
+  name:"State Laws & Rules",
+  minutes:60,
+  questions:[
+    {t:"Which agency governs cosmetology and esthetics licensing in Minnesota?",o:["Minnesota Department of Health","Minnesota Department of Labor and Industry","PSI Services LLC","Minnesota Board of Cosmetologist Examiners"],a:3,topic:"General Information",ex:"The Minnesota Board of Cosmetologist Examiners (also called the Board of Cosmetology) sets all licensing standards, administers rules, and oversees cosmetology, esthetics, nail tech, and related licenses."},
+    {t:"How many training hours are required to become a licensed esthetician in Minnesota?",o:["400 hours","500 hours","1,550 hours","600 hours"],a:3,topic:"General Information",ex:"Minnesota requires 600 hours of esthetics training at a Board-licensed school. Cosmetologists require 1,550 hours. Nail technicians require 350 hours. All training must be completed at approved in-person programs."},
+    {t:"What is the minimum passing score on ALL Minnesota esthetician exams?",o:["70%","80%","65%","75%"],a:3,topic:"General Information",ex:"All three exams — General Theory, State Laws & Rules, and Written Practical — require a minimum score of 75% to pass. PSI uses scaled scoring, so you will not know exactly which questions you missed."},
+    {t:"What is the minimum age requirement to apply for a Minnesota esthetician license?",o:["16 years old","18 years old","21 years old","17 years old"],a:3,topic:"Licensing",ex:"Applicants must be at least 17 years old. They must also hold a high school diploma or GED. Both requirements must be met at the time of application to the Minnesota Board of Cosmetology."},
+    {t:"How long is a Minnesota esthetician operator license valid before renewal is required?",o:["1 year","2 years","5 years","3 years"],a:3,topic:"Licensing",ex:"Minnesota esthetician licenses are valid for 3 years. Renewal is due by the last day of the licensee's birth month in the renewal year. Late renewals may incur additional fees."},
+    {t:"Within how long after passing the exam must a candidate apply for their esthetician license?",o:["6 months","2 years","3 years","1 year"],a:3,topic:"Licensing",ex:"Candidates must apply for licensure within 1 year of passing the exam. If multiple exams were passed on different dates, the 1-year clock starts from the earlier exam date. The training hours also expire after 3 years."},
+    {t:"How many total continuing education hours must a Minnesota esthetician complete per 3-year renewal?",o:["4 hours","6 hours","12 hours","8 hours"],a:3,topic:"Practice Requirements",ex:"Licensees must complete 8 CE hours per 3-year renewal cycle: 4 core hours (1 hr laws/rules + 3 hrs infection control) + 4 professional practice hours in a relevant topic area."},
+    {t:"Of the 8 required CE hours, how many must be 'core' hours covering laws/rules and infection control?",o:["2 hours","6 hours","8 hours","4 hours"],a:3,topic:"Practice Requirements",ex:"4 of the 8 required CE hours must be 'core' hours: 1 hour on state cosmetology laws and rules, plus 3 hours on health, safety, and infection control. The remaining 4 hours are professional practice hours."},
+    {t:"The core CE requirement includes how many hours specifically on state cosmetology laws and rules?",o:["2 hours","3 hours","4 hours","1 hour"],a:3,topic:"Practice Requirements",ex:"Exactly 1 hour of the core CE requirement must cover state cosmetology laws and rules. The other 3 core hours must address health, safety, and infection control practices."},
+    {t:"A Minnesota esthetician license renewal is due by:",o:["January 1st of the renewal year","The anniversary date of initial licensure","December 31st of the renewal year","The last day of the licensee's birth month"],a:3,topic:"Licensing",ex:"Minnesota cosmetology licenses must be renewed by the last day of the licensee's birth month in the renewal year. This means different licensees have different renewal deadlines based on when they were born."},
+    {t:"Which of the following services is within the scope of practice for a licensed Minnesota esthetician?",o:["Laser hair removal","Cutting and coloring hair","Administering chemical peels beyond licensed scope","Performing facial waxing services"],a:3,topic:"Licensing",ex:"Licensed estheticians in Minnesota may perform cosmetic skin care services including waxing, facials, makeup, and basic extractions. Hair services require a cosmetologist license. Advanced services may require Advanced Practice Esthetician licensure."},
+    {t:"Which of the following is NOT within the scope of practice for a standard Minnesota esthetician?",o:["Chemical exfoliation facials","Eyebrow waxing","Makeup application","Medical or invasive procedures"],a:3,topic:"Licensing",ex:"Estheticians are licensed for COSMETIC skin care only. Medical procedures (injections, laser, invasive treatments) require medical licensure. Advanced Practice Estheticians may perform additional services with a separate license."},
+    {t:"A licensee must notify the Minnesota Board of Cosmetology of a legal name change within:",o:["10 days","60 days","90 days","30 days"],a:3,topic:"Practice Requirements",ex:"Licensees must notify the Board within 30 days of any legal name change. The name on the license must match the name used professionally. Failure to notify can create compliance issues during inspections."},
+    {t:"Out-of-state estheticians seeking licensure in Minnesota by reciprocity must pass which exam?",o:["General Theory exam","Written Practical exam","All three Minnesota exams","Minnesota Laws & Rules exam"],a:3,topic:"Licensing",ex:"All reciprocity applicants must pass the Minnesota Laws & Rules exam regardless of their out-of-state qualifications. This ensures all licensed practitioners in MN understand state-specific regulations."},
+    {t:"What educational prerequisite must applicants meet to qualify for a Minnesota esthetician license?",o:["Associate's degree in esthetics","Bachelor's degree from any field","No formal education required","High school diploma or GED"],a:3,topic:"Licensing",ex:"Applicants must hold a high school diploma or its equivalent (GED). This requirement is in addition to the 600 training hours and must be met at the time of application to the Minnesota Board of Cosmetology."},
+    {t:"Where must a Minnesota esthetician license be displayed?",o:["In the licensee's personal portfolio only","Submitted to the Board of Cosmetology","Shown to clients only upon their specific request","Prominently and visibly at the salon where the licensee works"],a:3,topic:"Practice Requirements",ex:"Minnesota law requires that licenses be displayed prominently and visibly at the place of business where the licensee practices. Clients have the right to verify that their service provider is properly licensed."},
+    {t:"Who administers the Minnesota esthetician licensing examinations?",o:["Minnesota Board of Cosmetology directly","National Cosmetology Association","Milady Cosmetology Education","PSI Services LLC"],a:3,topic:"General Information",ex:"The Minnesota Board of Cosmetology has contracted with PSI Services LLC to administer all licensing examinations. PSI operates testing centers throughout Minnesota and provides immediate score results."},
+    {t:"A Minnesota esthetics student may perform services on the public:",o:["After completing 300 hours of training independently","Only outside of school hours for no payment","At any time since they are enrolled in an approved program","Only under the direct supervision of a licensed instructor"],a:3,topic:"Licensing",ex:"Students may perform services on the public only when under direct supervision of a licensed instructor. Supervision requirements ensure student work meets professional standards and protects consumers."},
+    {t:"Any establishment in Minnesota offering cosmetology or esthetics services must:",o:["Register with the city or county only","Obtain a federal business license","Hold only the operator licenses of its staff","Obtain a salon license issued by the Minnesota Board of Cosmetology"],a:3,topic:"Practice Requirements",ex:"All salons, spas, and esthetics establishments must hold a current salon license issued by the Board. This is separate from the individual operator licenses held by the practitioners working there."},
+    {t:"Which of the following is a ground for suspension or revocation of a Minnesota cosmetology license?",o:["Changing salon locations","Completing continuing education courses","Expanding services offered","Practicing while under the influence of drugs or alcohol"],a:3,topic:"Enforcement",ex:"The Board may discipline licensees for: fraud, criminal convictions, unprofessional conduct, practicing while impaired, client abandonment, and repeated safety or sanitation violations."},
+    {t:"Performing esthetics services in Minnesota without a valid license is:",o:["A minor infraction with a small administrative fine only","Allowed for students in their final 100 hours without supervision","Allowed if supervised by a licensed cosmetologist","Illegal and subject to civil fines and potential criminal penalties"],a:3,topic:"Enforcement",ex:"Practicing cosmetology or esthetics without a license is illegal in Minnesota under Statute 155A. Violators may face civil fines, injunctions, and criminal charges. The Board may also take action against the salon employing unlicensed individuals."},
+    {t:"Which type of disinfectant is required for use in a Minnesota licensed salon?",o:["Any household cleaner available at the store","Household bleach at any available concentration","Rubbing alcohol (isopropyl) used alone","EPA-registered disinfectant at the appropriate dilution"],a:3,topic:"Practice Requirements",ex:"Only EPA-registered disinfectants are acceptable for salon use. Products like Barbicide, Cavicide, or approved hospital-grade disinfectants meet this requirement. They must be used at the manufacturer's specified dilution and contact time."},
+    {t:"Single-use (disposable) items used in a Minnesota salon must be:",o:["Reused if properly disinfected between clients","Replaced only after visible soiling","Reused for the same returning client on their next visit","Discarded after use on each client with no exceptions"],a:3,topic:"Practice Requirements",ex:"Single-use items (lancets, wooden wax sticks, cotton, disposable files, etc.) cannot be disinfected and must be discarded after each client. Double-dipping wax spatulas into shared wax is prohibited."},
+    {t:"Minnesota salon rules require that client health history records must be:",o:["Optional at the esthetician's discretion","The property of the client and kept by them","Required only for chemical peel or invasive services","Maintained by the salon for all clients"],a:3,topic:"Practice Requirements",ex:"Client intake forms and health history records must be maintained at the salon. These records document contraindications, allergies, medications, and previous services — protecting both the client and the licensee."},
+    {t:"To manage a licensed salon and be responsible for its regulatory compliance in Minnesota, you must hold:",o:["The most seniority among licensed operators","A federal business management certificate","Any active cosmetology operator license","A specific salon manager license from the Board"],a:3,topic:"Licensing",ex:"A separate salon manager license is required to manage a salon and be legally responsible for its compliance with Minnesota cosmetology laws and rules. The salon manager license has its own exam and requirements."},
+    {t:"An out-of-state esthetician with fewer than 600 training hours can qualify for MN reciprocity if they have held an active license for at least:",o:["1 of the past 5 years","2 consecutive years","5 consecutive years","3 of the past 5 years"],a:3,topic:"Licensing",ex:"If an out-of-state applicant completed fewer training hours than Minnesota requires, they must demonstrate active licensure in good standing for at least 3 of the past 5 years to qualify for reciprocity."},
+    {t:"The Minnesota Board of Cosmetology has authority to:",o:["Override federal OSHA requirements for licensed salons","Set federal safety standards for all beauty professionals nationwide","Regulate only medical spas and medi-spas","License cosmetology schools and individual practitioners in Minnesota"],a:3,topic:"General Information",ex:"The Board's authority is limited to Minnesota. It licenses and regulates schools, practitioners, and salons within the state. It cannot override federal OSHA regulations or control practitioners in other states."},
+    {t:"If a candidate fails one of the Minnesota esthetician exams, they:",o:["Must wait 6 months before retaking any exam","Are permanently barred from retaking the failed section","Must complete additional training hours before retesting","May retake only the failed exam, but must pay the exam fee again"],a:3,topic:"General Information",ex:"There is no mandatory waiting period — candidates can reschedule through PSI as soon as a seat is available. However, each retake requires payment of the exam fee. If taking the combo exam, only failed sections need to be retaken."},
+    {t:"Continuing education hours for Minnesota esthetician license renewal must be completed:",o:["All in one approved session","Only at the licensee's home school","In the final 12 months of the license period only","At any point within the 3-year license period"],a:3,topic:"Practice Requirements",ex:"CE hours may be completed at any point during the 3-year license period. They do not all need to be completed at once or in the final year. Hours must be from Board-approved providers and documented for potential audit."},
+    {t:"Minnesota esthetician licenses are renewed on what schedule?",o:["Annually (every 1 year)","Every 2 years","Every 5 years","Every 3 years"],a:3,topic:"Licensing",ex:"All Minnesota cosmetology operator licenses (including esthetician) renew every 3 years. The renewal deadline is the last day of the licensee's birth month. A late renewal may allow continued practice briefly but incurs fees."},
+  ]
+},
+
+// ── EXAM 2: WRITTEN PRACTICAL (50 questions) ──────────────────────
+{
+  name:"Written Practical",
+  minutes:90,
+  questions:[
+    {t:"What is ALWAYS the first step before performing any esthetic service on a client?",o:["Cleansing the client's skin","Applying steam to open pores","Setting up all treatment supplies","Client consultation and review of health history"],a:3,topic:"Skin Analysis",ex:"The consultation is always the first step. It allows you to identify contraindications, allergies, medications, skin concerns, and goals before touching the client or beginning any treatment."},
+    {t:"An esthetician must wash their hands:",o:["Only before the service begins","Only after the service is complete","Only when visibly soiled with product","Before AND after every client service"],a:3,topic:"Safety & Infection Control",ex:"Handwashing before and after every client is a non-negotiable standard. Before = protects the client. After = protects the esthetician. Minimum 20 seconds with soap and warm water per CDC guidelines."},
+    {t:"Before applying wax to a client, the esthetician must test the wax temperature by:",o:["Applying a small amount to the client's inner arm first","Checking only the temperature gauge on the wax warmer","Asking the client if the temperature feels acceptable","Testing the wax on their own inner wrist"],a:3,topic:"Hair Removal",ex:"Always test wax on your inner wrist — an area of thin, sensitive skin similar to the client's. The wax should feel warm, never hot or painful. Never rely solely on a thermostat reading."},
+    {t:"Soft wax (strip wax) is applied in which direction relative to hair growth?",o:["Against the direction of hair growth","Perpendicular (sideways) to hair growth","In any direction for efficiency","In the direction of hair growth"],a:3,topic:"Hair Removal",ex:"Wax (both hard and soft) is always applied in the direction of hair growth to ensure it adheres fully to the hair shaft. It is then removed against the direction of hair growth with a quick, parallel motion."},
+    {t:"Wax is removed in which direction to minimize breakage and trauma?",o:["In the direction of hair growth","Straight up at a 90-degree angle","Against the direction of hair growth, parallel to skin","In a circular motion"],a:2,topic:"Hair Removal",ex:"Remove wax against the direction of hair growth, pulling swiftly and parallel to the skin (not upward). Pulling upward at an angle increases pain, trauma to the skin, and risk of skin lifting."},
+    {t:"Which type of wax is most appropriate for sensitive facial areas and causes less trauma on removal?",o:["Cold strip wax (pre-made)","Soft wax requiring muslin strips","Any wax with numbing additives","Hard wax, which hardens and removes without strips"],a:3,topic:"Hair Removal",ex:"Hard wax adheres primarily to the hair, not the skin, making it less traumatic on sensitive areas like the face, underarms, and bikini area. Soft wax adheres to both skin and hair and is best for large body areas."},
+    {t:"Which of the following is a contraindication for waxing services?",o:["Combination skin type","Minor skin dryness","Oily skin type","Current use of isotretinoin (Accutane)"],a:3,topic:"Hair Removal",ex:"Isotretinoin (Accutane) thins and sensitizes the skin dramatically. Waxing can cause severe skin lifting (tearing), scarring, and infection. This contraindication typically applies during use and 6–12 months after stopping."},
+    {t:"Post-waxing home care instructions should advise clients to avoid:",o:["Drinking adequate water","Gentle non-irritating moisturizers","Mild fragrance-free cleansers","Sun exposure and heat for 24–48 hours"],a:3,topic:"Hair Removal",ex:"After waxing, the skin is sensitized. Clients should avoid: direct sun exposure, tanning beds, hot showers or baths, saunas, steam rooms, heavy exercise (sweating), and harsh products for at least 24–48 hours."},
+    {t:"A client discloses they have been using a prescription topical retinoid. Regarding waxing, you should:",o:["Proceed with waxing normally as topical products don't affect waxing","Apply extra pre-wax oil to protect the skin","Increase the steam time to compensate","Avoid waxing any area where the retinoid is being applied"],a:3,topic:"Hair Removal",ex:"Topical retinoids thin the skin in the area of application, making it susceptible to lifting (tearing) during waxing. The affected areas should not be waxed. Confirm with the client which areas they apply the product."},
+    {t:"During facial extractions, which protective measure is absolutely mandatory for the esthetician?",o:["A full face shield","Eye goggles","An impermeable apron","Gloves"],a:3,topic:"Safety & Infection Control",ex:"Gloves are mandatory during extractions due to the risk of bloodborne pathogen exposure. If skin breaks during extraction, blood or bodily fluids may be present. Universal precautions require treating all such contact as potentially infectious."},
+    {t:"Which type of lesion should NEVER be extracted during a facial service?",o:["Closed comedone (whitehead)","Open comedone (blackhead)","Milia (requires lancet)","Cyst or deep nodule"],a:3,topic:"Basic Facial",ex:"Cysts and nodules are deep, inflamed lesions. Attempting extraction can rupture the lesion internally, spread infection, cause permanent scarring, and severely traumatize surrounding tissue. Refer the client to a dermatologist."},
+    {t:"The correct extraction technique for a comedone involves:",o:["Pressing firmly with bare fingernails in a pinching motion","Squeezing aggressively until the pore clears","Using a lancet on all types of comedones","Applying gentle, even pressure around the follicle using gloved, tissue-wrapped fingers"],a:3,topic:"Basic Facial",ex:"Use gloves and tissue-wrapped fingers (or a comedone extractor). Apply even, gentle pressure around — not directly on — the follicle opening. If a comedone does not release easily, do not force it. Move on."},
+    {t:"If a client bleeds during a service, the esthetician should immediately:",o:["Cover the area with a towel and continue the service","Apply increased pressure directly to speed up the service","Apply extra product to mask the bleeding","Stop the service, put on gloves, clean and disinfect the area, and apply antiseptic"],a:3,topic:"Safety & Infection Control",ex:"Any time blood appears: STOP immediately, don don gloves (if not already wearing them), clean and disinfect the wound site, apply antiseptic, and document the incident. Universal precautions apply — blood is always treated as potentially infectious."},
+    {t:"How far in advance of a chemical exfoliation service should a patch test be performed?",o:["30–60 minutes before the service","The morning of the appointment","1–2 weeks before the service","24–48 hours before the service"],a:3,topic:"Skin Analysis",ex:"A patch test (applying a small amount of the product to the inner elbow or behind the ear) should be performed 24–48 hours before service to allow time for a reaction to develop and be assessed before the full treatment."},
+    {t:"Which of the following represents the correct order of steps in a basic facial?",o:["Steam → Cleanse → Analyze → Exfoliate → Extract → Massage → Mask → Moisturize","Consult → Cleanse → Steam → Analyze → Extract → Exfoliate → Massage → Mask → Tone → Moisturize → SPF","Consult → Cleanse → Analyze → Steam → Exfoliate → Extract → Massage → Mask → Tone → Moisturize → SPF","Cleanse → Consult → Steam → Analyze → Extract → Massage → Mask → Tone → Moisturize"],a:2,topic:"Basic Facial",ex:"Correct order: Consult → Cleanse → Skin analysis (under magnifying lamp) → Steam → Exfoliation → Extractions → Massage → Mask → Remove mask → Tone → Serums/Moisturizer → SPF → Home care advice."},
+    {t:"Skin analysis should be performed:",o:["Before the client's skin has been cleansed","After steaming to see open pores","After exfoliation to see revealed skin","After cleansing and before steaming"],a:3,topic:"Skin Analysis",ex:"Skin analysis is done after cleansing (to assess clean skin) and before steaming (so you can identify the skin type and conditions to choose appropriate treatment). Analyzing uncleansed skin can give inaccurate results."},
+    {t:"Which massage movement is used to begin AND end a facial massage?",o:["Tapotement","Petrissage","Friction","Effleurage"],a:3,topic:"Basic Facial",ex:"Effleurage is a gliding, flowing stroke used to begin and end the massage. It warms up the skin, relaxes the client, distributes product, and provides a smooth transition between other movements."},
+    {t:"Tapotement in a facial massage refers to which type of movement?",o:["Deep, circular pressure movements","Slow, deep kneading strokes","Long, gliding strokes","Light, rapid tapping or percussion"],a:3,topic:"Basic Facial",ex:"Tapotement includes rapid, light tapping, patting, or percussion movements. It stimulates nerve endings, increases blood circulation, and can be invigorating. It is contraindicated on thin, sensitive, or broken skin."},
+    {t:"The direction of facial massage strokes should primarily follow:",o:["The pattern of facial hair growth","Blood flow patterns toward the heart","Muscle fiber orientation only","Lymph drainage toward the lymph nodes"],a:3,topic:"Basic Facial",ex:"Facial massage should follow the direction of lymphatic drainage toward the regional lymph nodes. This helps flush metabolic waste and excess fluid. Massage against lymph flow can cause swelling and puffiness."},
+    {t:"Which mask type is most appropriate for oily, acne-prone skin?",o:["Rich cream mask","Paraffin wax mask","Hydrating sheet mask","Clay or mud mask"],a:3,topic:"Basic Facial",ex:"Clay and mud masks absorb excess oil, deep-clean pores, and have a mildly astringent effect. They are ideal for oily, congested, or acne-prone skin. Paraffin and cream masks are better for dry skin."},
+    {t:"After removing a mask, what should be applied first to restore the skin's pH balance?",o:["Moisturizer","Serum","SPF","Toner"],a:3,topic:"Basic Facial",ex:"Toner is applied after mask removal to restore the skin's natural acidic pH (which the mask may have disturbed), remove any remaining mask residue, and prepare the skin for serums and moisturizer."},
+    {t:"When applying multiple skin care products after toning, the correct order is:",o:["Heaviest product first, then lightest","Any order is acceptable since all products are beneficial","SPF first, then serum, then moisturizer","Lightest consistency first, working up to heaviest"],a:3,topic:"Basic Facial",ex:"Apply products from thinnest to thickest consistency: toner → essence → serum → eye cream → moisturizer → SPF (if daytime). This allows lighter, active ingredients to penetrate before heavier products create a barrier."},
+    {t:"A client arrives with an active Herpes simplex outbreak (cold sore). You should:",o:["Avoid the lip area and perform the rest of the facial","Proceed using fresh gloves throughout the service","Apply a soothing balm to the area and continue","Refuse the service — active cold sores are a contraindication"],a:3,topic:"Safety & Infection Control",ex:"Active Herpes simplex (cold sores) is a highly contagious viral infection. The virus can spread to other areas of the face during massage and to the esthetician. No service should be performed until the outbreak has fully resolved."},
+    {t:"Which skin condition is a contraindication for the use of a facial steamer?",o:["Dry, flaky skin needing hydration","Oily or congested skin","Dehydrated skin lacking water","Rosacea or couperose (sensitive capillaries)"],a:3,topic:"Basic Facial",ex:"Steam causes vasodilation (blood vessel expansion) and increased flushing. For clients with rosacea or couperose skin (already dilated, sensitive capillaries), steam worsens redness and irritation. Use warm towels instead."},
+    {t:"Proper draping for a facial includes which of the following?",o:["Only a towel placed over the client's eyes","No draping is required for facials — only for body treatments","Covering only the client's legs and lower body","A headband to protect hair and a drape or sheet to protect clothing"],a:3,topic:"Safety & Infection Control",ex:"Proper draping protects the client's clothing and hair from products and ensures their comfort during the service. It also demonstrates professionalism and helps maintain client modesty."},
+    {t:"Green color corrector is used to neutralize:",o:["Dark under-eye circles","Yellow or sallow skin tones","Brown hyperpigmentation spots","Redness and rosacea"],a:3,topic:"Makeup",ex:"Color correcting works on the principle of complementary colors (opposites on the color wheel cancel each other). Green cancels red. Peach/orange cancels dark circles. Lavender cancels yellow. Yellow cancels purple/blue."},
+    {t:"Which color corrector is used to neutralize dark under-eye circles on medium to deep skin tones?",o:["Green","Lavender","White","Peach or orange"],a:3,topic:"Makeup",ex:"Peach or salmon-toned color correctors neutralize the blue-purple color of dark under-eye circles. For very deep skin tones, orange or deep orange correctors are most effective before foundation application."},
+    {t:"Regarding makeup tool sanitation, the correct practice is:",o:["Wipe brushes with a tissue between clients","Replace all tools weekly regardless of use","Share brushes between clients if cleaned with alcohol spray","Use disposable applicators per client; never apply product directly from packaging to client's face"],a:3,topic:"Makeup",ex:"Sanitation requires: disposable applicators (mascara wands, lip wands, sponges) per client; spatulas to transfer product from containers; disinfecting palettes between clients. Direct application from tubes is prohibited."},
+    {t:"When matching foundation to a client, the ideal placement for color testing is:",o:["The inside of the client's wrist","The back of the client's hand","The client's forehead","The client's neck and jawline area"],a:3,topic:"Makeup",ex:"Foundation should be matched to the neck and chest (décolletage) to ensure it blends seamlessly with the body. Testing on the wrist or hand can give inaccurate results since these areas are often a different shade."},
+    {t:"Airbrush makeup differs from traditional makeup application primarily in that it:",o:["Provides heavier, more opaque coverage than traditional","Cannot be used for special event or bridal makeup","Requires more product to achieve coverage","Uses compressed air to apply pigment in an even, buildable, lightweight layer"],a:3,topic:"Makeup",ex:"Airbrush makeup uses a small spray gun and compressed air to deliver a fine, even mist of pigment. It creates a flawless, photogenic finish with minimal product. It's popular for bridal, stage, and event makeup."},
+    {t:"Sugaring for hair removal differs from traditional waxing because:",o:["It is applied with strips only","It is applied in the direction of hair growth and removed in the direction of hair growth","It is applied against hair growth and removed against hair growth","It is applied in the direction of hair growth and removed against hair growth"],a:1,topic:"Hair Removal",ex:"Sugaring paste is applied against the direction of hair growth but removed in the direction of hair growth (opposite of waxing). It is water-soluble, making cleanup easier, and is gentler on sensitive skin."},
+    {t:"Threading is most appropriate for clients because:",o:["It is most effective on large body areas like the legs","It requires the use of chemical products","It works best only on very coarse, thick hair","It uses no chemicals and works well for chemical-sensitive clients or precise facial shaping"],a:3,topic:"Hair Removal",ex:"Threading uses only a twisted cotton thread to catch and pull hairs. It is precise, chemical-free, and effective for facial shaping (brows, upper lip). It is an excellent option for clients with chemical sensitivities."},
+    {t:"Permanent hair removal methods (such as electrolysis) are most effective during which hair growth phase?",o:["Telogen (resting phase)","Catagen (transition phase)","Exogen (shedding phase)","Anagen (active growth phase)"],a:3,topic:"Hair Removal",ex:"During the anagen phase, the hair is fully attached to the dermal papilla and is actively growing. This direct attachment makes it most vulnerable to permanent removal methods. Not all hairs are in anagen at the same time."},
+    {t:"Before applying soft wax, what should be applied to the skin to help the wax adhere and protect the skin?",o:["A thick moisturizing lotion","Nothing — completely bare, dry skin","A cooling toner to close pores","Pre-wax oil or primer to form a protective barrier"],a:3,topic:"Hair Removal",ex:"Pre-wax oil creates a thin barrier between the wax and the skin, reducing trauma while still allowing the wax to adhere to the hairs. For hard wax, pre-wax powder absorbs excess moisture and oil."},
+    {t:"Ingrown hairs after waxing can best be prevented by:",o:["Waxing more frequently to retrain hair growth","Avoiding moisturizer in waxed areas","Using only cold wax strips","Regular exfoliation and consistent moisturizing of the waxed area"],a:3,topic:"Hair Removal",ex:"Ingrown hairs form when hair curls back into the follicle. Regular exfoliation (1–2x per week) removes dead skin cells that trap hairs, and moisturizing keeps skin soft and hair follicles flexible."},
+    {t:"The correct procedure for disinfecting metal implements in a salon includes:",o:["Rinsing with water and storing wet","Wiping with a dry paper towel before storing","Placing in a UV sterilizer for exactly 5 minutes","Removing debris, cleaning with soap and water, rinsing, then applying EPA-registered disinfectant for the required contact time"],a:3,topic:"Safety & Infection Control",ex:"Proper disinfection: 1) Remove visible debris 2) Wash with soap and water 3) Rinse thoroughly 4) Apply EPA-registered disinfectant and allow to remain WET for the full contact time 5) Store in clean, covered container."},
+    {t:"Non-porous implements may be disinfected between clients. Porous implements must be:",o:["Disinfected with a stronger concentration solution","Boiled in water for 10 minutes","Run through an autoclave sterilizer","Discarded after single use"],a:3,topic:"Safety & Infection Control",ex:"Porous materials (wooden tools, fabric, nail files, buffers, sponges) cannot be effectively disinfected because the pores harbor microorganisms even after disinfectant application. They are designated as single-use items."},
+    {t:"A client discloses they are taking blood-thinning medications (anticoagulants). This information is MOST relevant when planning:",o:["A basic hydrating cleansing facial","A soothing mask treatment","LED light therapy","Extractions — proceed with extra caution or avoid"],a:3,topic:"Skin Analysis",ex:"Blood thinners increase bleeding risk significantly. Even gentle extraction pressure can cause excessive bleeding. Inform the client, obtain consent if proceeding, and be extremely cautious. Some protocols recommend avoiding extractions entirely."},
+    {t:"Universal precautions in a salon setting require the esthetician to:",o:["Treat only visibly infected clients' bodily fluids with caution","Only wear gloves for clients known to have bloodborne diseases","Treat all blood and bodily fluids from all clients as potentially infectious","Consider bodily fluids infectious only when blood is visible"],a:2,topic:"Safety & Infection Control",ex:"Universal precautions (established by CDC and OSHA) require treating ALL blood and bodily fluids from ALL clients as if they are infectious, regardless of the client's known health status. This protects both the esthetician and clients."},
+    {t:"A Wood's Lamp analysis showing orange or orange-yellow fluorescence indicates:",o:["Normal, healthy hydrated skin","Dehydrated or thin skin","Active acne bacteria present","Oily areas or thick sebum deposits"],a:3,topic:"Skin Analysis",ex:"Under a Wood's Lamp: orange = oily/sebaceous areas; white-ivory = normal; purple/violet = dry or dehydrated; dark spots/no fluorescence = hyperpigmented areas or thick corneum. Analysis is performed in a dark room."},
+    {t:"During skin analysis, which physical assessment indicates the skin is dehydrated?",o:["Visibly large or congested pores","Extensive scaling and flaking","Thick sebum deposits in the T-zone","Skin that temporarily wrinkles or tents when gently pinched"],a:3,topic:"Skin Analysis",ex:"The pinch test: lightly pinch a small area of the cheek and release. Healthy, hydrated skin bounces back immediately. Dehydrated skin will wrinkle, tent, or be slow to spring back. Dehydrated skin also looks dull and flat."},
+    {t:"Isotretinoin (Accutane) is an absolute contraindication for:",o:["All facial services including massage","Steam treatments only","Facial LED light therapy","Both chemical exfoliation and waxing"],a:3,topic:"Skin Analysis",ex:"Isotretinoin causes extreme skin sensitization and thinning. Chemical peels/exfoliants can cause severe burns and scarring. Waxing causes skin lifting. These contraindications apply during treatment and for an extended period after cessation."},
+    {t:"Before performing any chemical exfoliation service, an esthetician should always:",o:["Apply a generous amount of moisturizer to the skin","Extract all comedones before applying the chemical","Perform a steam treatment for 15–20 minutes","Perform a patch test on the client 24–48 hours before the service"],a:3,topic:"Skin Analysis",ex:"A patch test identifies allergic reactions or sensitivities to the chemical product BEFORE it is applied to the entire face. This is a critical safety step and protects the client from adverse reactions."},
+    {t:"Which of the following clients would be the BEST candidate for a mild chemical exfoliation?",o:["A client currently taking isotretinoin (Accutane)","A client with a fresh sunburn","A client with active rosacea flare-up","A client with post-inflammatory hyperpigmentation and no contraindications"],a:3,topic:"Skin Analysis",ex:"PIH (post-inflammatory hyperpigmentation) is a common indication for mild chemical exfoliation — AHAs and mild enzyme peels can help fade discoloration. All contraindications must be absent before proceeding."},
+    {t:"During waxing, skin lifting (tearing of skin) is most likely caused by:",o:["Using wax that is slightly too cool","Removing wax too slowly","Applying wax in the wrong direction","Pulling wax upward at an angle, or the client using contraindicated medications"],a:3,topic:"Hair Removal",ex:"Skin lifting occurs when: the pull angle is upward (not parallel); the skin is not held taut; contraindicated medications are being used (retinoids, Accutane, blood thinners); or the skin is already compromised."},
+    {t:"What is the primary purpose of pre-wax powder when using hard wax?",o:["To numb the skin and reduce sensation","To cool the wax temperature down","To moisturize and condition the skin","To absorb excess oil and moisture so the wax can adhere properly to the hair"],a:3,topic:"Hair Removal",ex:"Pre-wax powder (typically talc or corn starch) absorbs excess moisture and oil from the skin surface, creating a clean, dry base for hard wax to grip the hairs effectively without adhering to wet skin."},
+    {t:"Eye protection for the client during LED and light-based treatments:",o:["Is optional based on the individual client's preference","Is only required for ultraviolet (UV) treatments","Is only required for blue light treatments specifically","Is required for ALL light-based treatments to protect from retinal damage"],a:3,topic:"Safety & Infection Control",ex:"All light-emitting treatments (LED, IPL, UV lamps, high-frequency when using UV) require proper eye protection for the client. Protective goggles or opaque eye pads must be used to prevent retinal damage."},
+    {t:"A client has visible varicose veins on their legs. The esthetician should:",o:["Perform the full leg wax while carefully avoiding the vein area","Apply extra hard wax directly over the varicose veins","Apply pre-wax oil generously over the varicose vein area","Not wax over varicose veins — they are a contraindication for waxing"],a:3,topic:"Hair Removal",ex:"Varicose veins are fragile, dilated blood vessels that can rupture under the pressure of waxing. Waxing directly over varicose veins can cause pain, bruising, and damage to the vessel walls. The area must be avoided."},
+    {t:"The correct way to remove a facial mask is:",o:["Aggressively peel the mask off in a single motion","Only allow the mask to dry completely, then crack and peel","Remove with dry cotton rounds and no moisture","Use warm, damp sponges or cloths and remove gently in upward, outward strokes"],a:3,topic:"Basic Facial",ex:"Mask removal should be gentle to avoid irritating freshly treated skin. Use warm (not hot) damp sponges or cloths. Peeling aggressively can cause trauma, redness, and disruption of the skin barrier."},
+    {t:"After all facial services are complete, used and soiled implements should be:",o:["Rinsed with water and returned to the work station","Wiped with a tissue and placed back in the drawer","Soaked in standing water overnight","Placed immediately in a labeled soiled/used container for proper cleaning and disinfection"],a:3,topic:"Safety & Infection Control",ex:"All used implements must be properly segregated from clean implements immediately after use. Soiled items go into a labeled 'used' container for cleaning. Clean, disinfected implements are stored separately in covered containers."},
+    {t:"Which of the following mask types creates heat and is best for dry, mature skin needing deep hydration?",o:["Clay/mud mask","Gel mask","Enzyme peel mask","Paraffin wax mask"],a:3,topic:"Basic Facial",ex:"Paraffin wax masks create an occlusive seal that traps body heat, deeply warming the skin and driving hydrating products deeper. They are ideal for very dry, dehydrated, or mature skin. They are contraindicated for sensitive or oily/acne-prone skin."},
+    {t:"A client asks about getting a wax service but mentions they just had a chemical peel 5 days ago. You should:",o:["Proceed since 5 days is sufficient recovery time","Apply a minimal amount of wax very carefully","Perform the wax only on areas not treated by the peel","Postpone the waxing — freshly peeled skin is too sensitive and at high risk for lifting"],a:3,topic:"Hair Removal",ex:"Chemical peels remove layers of the epidermis and dramatically sensitize the skin. Waxing after a recent peel risks severe skin lifting, tearing, infection, and scarring. Clients typically need to wait 2–4 weeks minimum."},
+    {t:"Before beginning any waxing service, what must the esthetician always do to prepare the skin?",o:["Apply a thick layer of pre-wax oil to the entire area","Steam the area to open pores for better hair removal","Apply a cooling toner to constrict pores","Cleanse the skin to remove oil, lotion, or product that would prevent wax adhesion"],a:3,topic:"Hair Removal",ex:"Cleansing the skin before waxing removes makeup, skincare products, oils, and sweat that would prevent the wax from adhering properly to the hair. After cleansing, pre-wax products (oil or powder) are applied as appropriate for the wax type used."},
+  ]
+}
+
+];
+
+// ═══════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════
+let examIdx = -1, curQ = 0, answers = [], flagged = [], timer = null, secondsLeft = 0;
+
+function selectExam(i, el){
+  document.querySelectorAll('.exam-opt').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected');
+  examIdx = i;
+  const btn = document.getElementById('startBtn');
+  btn.disabled = false;
+  btn.textContent = 'Begin ' + BANKS[i].name + ' Exam →';
+}
+
+function startExam(){
+  if(examIdx < 0) return;
+  const exam = BANKS[examIdx];
+  answers = new Array(exam.questions.length).fill(-1);
+  flagged = new Array(exam.questions.length).fill(false);
+  curQ = 0;
+  secondsLeft = exam.minutes * 60;
+  document.getElementById('topbar-exam-name').textContent = exam.name;
+  document.getElementById('welcome').style.display = 'none';
+  document.getElementById('exam-screen').style.display = 'flex';
+  buildGrid();
+  renderQ();
+  startTimer();
+}
+
+function startTimer(){
+  clearInterval(timer);
+  updateTimerDisplay();
+  timer = setInterval(()=>{
+    secondsLeft--;
+    updateTimerDisplay();
+    if(secondsLeft <= 0){ clearInterval(timer); submitExam(); }
+  }, 1000);
+}
+
+function updateTimerDisplay(){
+  const m = Math.floor(secondsLeft/60), s = secondsLeft%60;
+  const str = String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  document.getElementById('timerVal').textContent = str;
+  document.getElementById('reviewTimerVal').textContent = str;
+  const box = document.getElementById('timerBox');
+  box.className = 'timer-box';
+  if(secondsLeft < 300) box.classList.add('danger');
+  else if(secondsLeft < 600) box.classList.add('warning');
+}
+
+function buildGrid(){
+  const exam = BANKS[examIdx];
+  const grid = document.getElementById('qGrid');
+  grid.innerHTML = '';
+  exam.questions.forEach((_,i)=>{
+    const d = document.createElement('button');
+    d.className = 'q-dot';
+    d.textContent = i+1;
+    d.onclick = ()=>{ curQ = i; renderQ(); };
+    grid.appendChild(d);
+  });
+}
+
+function updateGrid(){
+  const dots = document.querySelectorAll('.q-dot');
+  dots.forEach((d,i)=>{
+    d.className = 'q-dot';
+    if(answers[i]!==-1) d.classList.add('answered');
+    if(flagged[i]) d.classList.add('flagged');
+    if(i===curQ) d.classList.add('current');
+  });
+}
+
+function renderQ(){
+  const exam = BANKS[examIdx];
+  const q = exam.questions[curQ];
+  const total = exam.questions.length;
+  document.getElementById('qProgress').textContent = `Question ${curQ+1} of ${total}`;
+  document.getElementById('qText').textContent = q.t;
+  const ol = document.getElementById('optionsList');
+  ol.innerHTML = '';
+  const keys = ['A','B','C','D'];
+  q.o.forEach((opt,i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'option-btn' + (answers[curQ]===i?' selected':'');
+    btn.innerHTML = `<span class="option-key">${keys[i]}</span><span>${opt}</span>`;
+    btn.onclick = ()=>{ answers[curQ]=i; renderQ(); };
+    ol.appendChild(btn);
+  });
+  const fb = document.getElementById('flagBtn');
+  fb.className = 'flag-btn' + (flagged[curQ]?' flagged':'');
+  fb.textContent = flagged[curQ]? '🚩 Flagged':'🚩 Flag for Review';
+  document.getElementById('prevBtn').disabled = curQ===0;
+  document.getElementById('nextBtn').textContent = curQ===total-1 ? 'Review All →' : 'Next →';
+  document.getElementById('navCenter').textContent = `${answers.filter(a=>a!==-1).length} of ${total} answered`;
+  updateGrid();
+}
+
+function toggleFlag(){ flagged[curQ]=!flagged[curQ]; renderQ(); }
+function prevQ(){ if(curQ>0){curQ--;renderQ();} }
+function nextQ(){
+  const total = BANKS[examIdx].questions.length;
+  if(curQ<total-1){curQ++;renderQ();}
+  else goToReview();
+}
+
+function goToReview(){
+  const exam = BANKS[examIdx];
+  const total = exam.questions.length;
+  const ans = answers.filter(a=>a!==-1).length;
+  const unans = total-ans;
+  const fl = flagged.filter(Boolean).length;
+  document.getElementById('rv-answered').textContent = ans;
+  document.getElementById('rv-unanswered').textContent = unans;
+  document.getElementById('rv-flagged').textContent = fl;
+  const list = document.getElementById('reviewList');
+  list.innerHTML = '';
+  exam.questions.forEach((q,i)=>{
+    const item = document.createElement('div');
+    item.className = 'review-item';
+    item.onclick = ()=>{ backToExam(); curQ=i; renderQ(); };
+    let statusClass='answered', statusText='Answered';
+    if(answers[i]===-1){statusClass='unanswered';statusText='Not Answered';}
+    else if(flagged[i]){statusClass='flagged';statusText='Flagged';}
+    item.innerHTML = `<span class="ri-num">${i+1}</span><span class="ri-text">${q.t.substring(0,80)}${q.t.length>80?'...':''}</span><span class="ri-status ${statusClass}">${statusText}</span>`;
+    list.appendChild(item);
+  });
+  document.getElementById('exam-screen').style.display='none';
+  document.getElementById('review-screen').style.display='flex';
+  document.getElementById('review-screen').style.flexDirection='column';
+}
+
+function backToExam(){
+  document.getElementById('review-screen').style.display='none';
+  document.getElementById('exam-screen').style.display='flex';
+  renderQ();
+}
+
+function confirmSubmit(){ document.getElementById('submitModal').classList.add('open'); }
+function closeModal(){ document.getElementById('submitModal').classList.remove('open'); }
+
+function submitExam(){
+  closeModal();
+  clearInterval(timer);
+  const exam = BANKS[examIdx];
+  const qs = exam.questions;
+  let correct = 0;
+  const topicMap = {};
+  qs.forEach((q,i)=>{
+    const t = q.topic;
+    if(!topicMap[t]) topicMap[t]={correct:0,total:0};
+    topicMap[t].total++;
+    if(answers[i]===q.a){ correct++; topicMap[t].correct++; }
+  });
+  const pct = Math.round(correct/qs.length*100);
+  const pass = pct >= 75;
+  const vb = document.getElementById('verdictBadge');
+  vb.className = 'verdict-badge ' + (pass?'pass':'fail');
+  vb.textContent = pass ? '✓ PASS' : '✗ DID NOT PASS';
+  const sb = document.getElementById('scoreBig');
+  sb.className = 'score-big ' + (pass?'pass':'fail');
+  sb.textContent = pct+'%';
+  document.getElementById('scoreSub').textContent = `${exam.name} — ${pass?'Congratulations, you passed!':'Score below passing threshold of 75%'}`;
+  document.getElementById('rm-correct').textContent = correct;
+  document.getElementById('rm-total').textContent = qs.length;
+  const breakdown = document.getElementById('topicBreakdown');
+  breakdown.innerHTML = '';
+  const colors = {pass:'#276749',warn:'#C05621',fail:'#9B1C1C'};
+  Object.entries(topicMap).sort((a,b)=>b[1].correct/b[1].total - a[1].correct/a[1].total).forEach(([topic,data])=>{
+    const p = Math.round(data.correct/data.total*100);
+    const col = p>=80?colors.pass:p>=60?colors.warn:colors.fail;
+    breakdown.innerHTML += `<div class="topic-row"><div class="topic-row-header"><span class="topic-name">${topic}</span><span class="topic-pct" style="color:${col}">${p}% (${data.correct}/${data.total})</span></div><div class="progress-track"><div class="progress-fill" style="width:${p}%;background:${col}"></div></div></div>`;
+  });
+  const al = document.getElementById('answerList');
+  al.innerHTML = '';
+  qs.forEach((q,i)=>{
+    const userAns = answers[i];
+    const isCorrect = userAns === q.a;
+    const userText = userAns===-1 ? 'Not answered' : q.o[userAns];
+    al.innerHTML += `<div class="answer-item"><div class="ai-q">Q${i+1}: ${q.t}</div><div class="ai-row"><span class="ai-label">Your answer:</span><span class="${isCorrect?'ai-correct':'ai-wrong'}">${userAns===-1?'—':String.fromCharCode(65+userAns)+'. '+userText}</span>${isCorrect?' ✓':''}</div>${!isCorrect?`<div class="ai-row"><span class="ai-label">Correct:</span><span class="ai-correct">${String.fromCharCode(65+q.a)}. ${q.o[q.a]}</span></div>`:''}${q.ex?`<div class="ai-exp">💡 ${q.ex}</div>`:''}</div>`;
+  });
+  document.getElementById('review-screen').style.display='none';
+  document.getElementById('exam-screen').style.display='none';
+  document.getElementById('results-screen').style.display='block';
+}
+
+function toggleAnswerReview(){
+  const list = document.getElementById('answerList');
+  const btn = document.querySelector('.toggle-review');
+  if(list.classList.toggle('open')){ btn.textContent='Hide Answers ▲'; }
+  else{ btn.textContent='Show All Answers ▼'; }
+}
+
+function retake(){ location.reload(); }
+function backToMenu(){ location.reload(); }
+</script>
+</body>
+</html>
